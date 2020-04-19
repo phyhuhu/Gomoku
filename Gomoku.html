@@ -1,0 +1,35 @@
+<!doctype html>
+
+<head>
+  <title>Gomoku</title>
+  <link href="Gomoku.css" rel="stylesheet">
+</head>
+
+<body>
+  <center>
+    <h1>Gomoku!</h1>
+  </center>
+  <h3>Instruction:</h3>
+  <p>
+    Gomoku, also called Five in a Row, is an abstract strategy board game.
+    Two players alternate turns placing a piece of their color on an empty cell. 
+    The winner is the first player to form an unbroken chain of five pieces horizontally, vertically, or diagonally.
+    The game is a tie if the entire board fills up without a winner. 
+    The default board size is 10X10, which can be changed through "Set Up Board Size".
+  </p>
+
+  <center>
+    <form id="inputSize">
+      <label>Set Up Board Size:</label>
+      <input type="text" placeholder="Int > 5" id="boardSize">
+      <button>submit</button>
+    </form>
+
+    <div id="game">
+      <table id="board"></table>
+    </div>
+  </center>
+  <script src="Gomoku.js"></script>
+
+</body>
+</html>
