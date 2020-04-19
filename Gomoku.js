@@ -11,12 +11,12 @@ const event = document.querySelector("#inputSize");
 const size = document.querySelector('#boardSize');
 event.addEventListener('submit', function(e){
   e.preventDefault();
-  if (size.value>5){
+  if (size.value>5 && size.value%2===0){
     WIDTH=size.value;
   }
   else{
     WIDTH=10;
-    alert('Please input Int > 5 !!!');
+    alert('Please input Even Number > 5 !!!');
   }
   HEIGHT=WIDTH;
   size.value='';
