@@ -1,22 +1,23 @@
 // set up the board size
-let WIDTH = 10;
+let WIDTH = 6;
 let HEIGHT = WIDTH;
 let FINISH = false;
 
 let currPlayer = 1; // active player: 1 or 2
 let board = []; // array of rows, each row is array of cells  (board[y][x])
+let numP = 1;
 
 // change the board size
 const event = document.querySelector("#inputSize");
 const size = document.querySelector('#boardSize');
 event.addEventListener('submit', function(e){
   e.preventDefault();
-  if (size.value>5 && size.value%2===0){
+  if (size.value>5){
     WIDTH=size.value;
   }
   else{
-    WIDTH=10;
-    alert('Please input Even Number > 5 !!!');
+    WIDTH=6;
+    alert('Please input Number > 5 !!!');
   }
   HEIGHT=WIDTH;
   size.value='';
@@ -32,6 +33,56 @@ event.addEventListener('submit', function(e){
   board = [];
   makeBoard();
   makeHtmlBoard();
+});
+
+// choose number of players
+const eventPlayer = document.querySelector("#numP");
+const num2 = document.querySelector('#two');
+const num1 = document.querySelector('#one');
+eventPlayer.addEventListener('click', function(e){
+  e.preventDefault();
+
+  const numText = document.querySelectorAll("#textForP");
+  if (numText.length!==0){
+    for (let textOne of numText){
+      textOne.remove();
+    }
+  }
+  const textP = document.createElement("h1");
+  textP.setAttribute('id', 'textForP');
+  eventPlayer.append(textP);
+  if(e.target.id!=='two'){
+    numP=1;
+    textP.innerText='Play with Computer!';
+
+    const trList = document.querySelectorAll('#newTr');
+    for (let trOne of trList){
+      trOne.remove();
+    }
+
+    // rebuild board and reset the game
+    FINISH=false;
+    currPlayer = 1;
+    board = [];
+    makeBoard();
+    makeHtmlBoard();
+  }
+  else{
+    numP=2;
+    textP.innerText='Two Players: black first, white second!';
+
+    const trList = document.querySelectorAll('#newTr');
+    for (let trOne of trList){
+      trOne.remove();
+    }
+
+    // rebuild board and reset the game
+    FINISH=false;
+    currPlayer = 1;
+    board = [];
+    makeBoard();
+    makeHtmlBoard();
+  }
 });
 
 /** makeBoard: create in-JS board structure:
@@ -70,6 +121,15 @@ function placeInTable(y, x) {
   const piece = document.createElement('div');
   piece.classList.add('piece');
   piece.classList.add(`p${currPlayer}`);
+  const pieceImg = document.createElement('img');
+  pieceImg.setAttribute('id','myImg');
+  if (currPlayer===1){
+    pieceImg.src="image/black.png";
+  }
+  else{
+    pieceImg.src="image/white.png";
+  }
+  piece.append(pieceImg);
 
   const place = document.getElementById(`${y}-${x}`);
   if (place!==null && piece!==null) place.append(piece);
@@ -83,11 +143,67 @@ function endGame(msg) {
 /** handleClick: handle click of column top to play piece */
 function handleClick(evt) {
   // get x from ID of clicked cell
+  let x=0;
+  let y=0;
   let xy = evt.target.id.split('-');
-  let x=parseInt(xy[1]);
-  let y=parseInt(xy[0]);
+  x=parseInt(xy[1]);
+  y=parseInt(xy[0]);
 
-  if ((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT)) {
+  if ((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT) && !board[y][x]) {
+    if (!FINISH){
+      board[y][x] = currPlayer;
+      placeInTable(y, x);
+    }
+    else{
+      alert('Game FINISHED!!!');
+      return;
+    }
+  }
+  else {
+    if (!FINISH){
+      alert('Please choose another cell!!!');
+      return;
+    }
+    else{
+      alert('Game FINISHED!!!');
+      return;
+    }
+  }
+  
+  // check for win
+  if (checkForWin()) {
+    FINISH=true;
+    return endGame(`Player ${currPlayer} won!`);
+  }
+  
+  // check for tie
+  if (board.every(row => row.every(cell => cell))) {
+    FINISH=true;
+    return endGame('Tie!');
+  }
+    
+  // switch players
+  currPlayer = currPlayer === 1 ? 2 : 1;
+
+  if (numP===1){
+    setTimeout(() => {
+      computerP();
+    }, 500);
+  }
+}
+
+function computerP() {
+  // get x from ID of clicked cell
+  x = Math.floor(Math.random() * WIDTH);
+  y = Math.floor(Math.random() * HEIGHT);
+
+  while (board[y][x]){
+    x = Math.floor(Math.random() * WIDTH);
+    y = Math.floor(Math.random() * HEIGHT);
+  }
+  // console.log(x,y, board[y][x]);
+
+  if ((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT) && !board[y][x]) {
     if (!FINISH){
       board[y][x] = currPlayer;
       placeInTable(y, x);

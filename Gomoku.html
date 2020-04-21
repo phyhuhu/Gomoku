@@ -3,28 +3,58 @@
 <head>
   <title>Gomoku</title>
   <link href="Gomoku.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Kalam&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <center>
-    <h1>Gomoku!</h1>
-  </center>
-  <h3>Instruction:</h3>
-  <p>
-    Gomoku, also called Five in a Row, is an abstract strategy board game.
-    Two players alternate turns placing a piece of their color on an empty cell. 
-    The winner is the first player to form an unbroken chain of five pieces horizontally, vertically, or diagonally.
-    The game is a tie if the entire board fills up without a winner. 
-    The default board size is 10X10, which can be changed through "Set Up Board Size".
-  </p>
+  <!-- <audio autoplay="autoplay"><source src="perfect.mp3" type="audio/mpeg" /></audio> -->
+  <!-- <BGSOUND src="perfect.mp3" loop=infinite></BGSOUND> -->
 
-  <center>
+  <!-- <embed src="perfect.mp3" loop="true" autostart="true" width="2" height="0"> -->
+  <!-- <bgsound src='perfect.mp3'>-->
+
+
+  <!-- <figure>
+      <figcaption>Listen to the T-Rex:</figcaption>
+      <audio
+          controls
+          src="perfect.mp3">
+              Your browser does not support the
+              <code>audio</code> element.
+      </audio>
+  </figure> -->
+
+
+  <div id='ins'>
+    <center>
+      <h1>Gomoku!</h1>
+    </center>
+    <!-- <h3>Instruction:</h3> -->
+    <p>
+      Gomoku, also called Five in a Row, is an abstract strategy board game.
+      Two players alternate turns placing a piece of their color on an empty cell. 
+      The winner is the first player to form an unbroken chain of five pieces horizontally, vertically, or diagonally.
+      The game is a tie if the entire board fills up without a winner. 
+      The default board size is 6X6, which can be changed through "Set Up Board Size".
+    </p>
+    <center>
     <form id="inputSize">
       <label>Set Up Board Size:</label>
-      <input type="text" placeholder="Even Number > 5" id="boardSize">
-      <button>submit</button>
+      <input type="text" placeholder="Number > 5" id="boardSize" size="20">
+      <button class="favorite styled">submit</button>
     </form>
 
+    <form id="numP">
+      <input class="favorite styled" id="two" type="button" value="Two Players">
+      <input class="favorite styled" id="one" type="button" value="Play with Computer">
+      <h1 id='textForP'>Play with Computer!</h1>
+    </form>
+
+    <audio controls src="perfect.mp3" loop="true" autostart="true"></audio>
+    </center>
+  </div>
+
+  <center>
     <div id="game">
       <table id="board"></table>
     </div>

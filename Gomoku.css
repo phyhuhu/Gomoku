@@ -1,10 +1,30 @@
+body {
+  background-size: 1000px 800px;
+  background-image: url("image/bg.jpg");
+  background-color: rgba(255,255,255,0.7);
+  background-blend-mode: lighten;
+  font-family: Kalam;
+}
+
+#ins {
+  position: absolute;
+  max-height: 100%;
+  max-width: 40%;
+}
+
+p{
+  font-size: 20px;
+}
+
 /* game board table */
 #game {
+  position: absolute;
   border: 0px solid black;
   display: inline-block;
-  background-color: rgb(142, 167, 247);
+  /* background-color: rgb(142, 167, 247); */
   min-height: 10px;
   min-width: 10px;
+  background-image: url("image/board.jpeg");
 }
 
 #board td {
@@ -24,22 +44,45 @@
   border-radius: 50%;
 }
 
-/* TODO: make pieces red/blue,  depending on player 1/2 piece */
+#myImg {
+  max-width: 100%;
+  max-height: 100%;
 
-.piece.p1 {
-  background-color: white; /* red;*/
+  display: flex;
+	justify-content: center;
+	align-items: center;
+  flex-direction: column;
 }
 
-.piece.p2 {
-  background-color: black; /* blue;*/
+input {
+  font-family: Kalam;
+  font-size: 18px;
 }
 
-/* column-top is table row of clickable areas for each column */
-
-#column-top td {
-  border: dashed 1px lightgray;
+.styled {
+  border: 0;
+  line-height: 2.5;
+  padding: 0 20px;
+  font-family: Kalam;
+  font-size: 20px;
+  text-align: center;
+  /* color: #fff; */
+  text-shadow: 1px 1px 1px #000;
+  border-radius: 10px;
+  /* background-color: rgba(220, 0, 0, 1); */
+  background-image: linear-gradient(to top left,
+                                    rgba(0, 0, 0, .2),
+                                    rgba(0, 0, 0, .2) 30%,
+                                    rgba(0, 0, 0, 0));
+  box-shadow: inset 2px 2px 3px rgba(255, 255, 255, .6),
+              inset -2px -2px 3px rgba(0, 0, 0, .6);
 }
 
-#column-top td:hover {
-  background-color: gold;
+.styled:hover {
+  background-color: rgb(162, 142, 250);
+}
+
+.styled:active {
+  box-shadow: inset -2px -2px 3px rgba(255, 255, 255, .6),
+              inset 2px 2px 3px rgba(0, 0, 0, .6);
 }
