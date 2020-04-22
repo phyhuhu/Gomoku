@@ -1,11 +1,208 @@
-// set up the board size
-let WIDTH = 6;
-let HEIGHT = WIDTH;
-let FINISH = false;
+class Gomoku{
+  constructor(width,numP,finish=false){
+    this.width=width;
+    this.height=width;
+    this.finish=finish;
+    this.numP=numP;
+    this.currPlayer=1; // active player: 1 or 2
+    this.makeBoard();
+    this.makeHtmlBoard();
+  }
 
-let currPlayer = 1; // active player: 1 or 2
-let board = []; // array of rows, each row is array of cells  (board[y][x])
-let numP = 1;
+/** makeBoard: create in-JS board structure:
+ *    board = array of rows, each row is array of cells  (board[y][x])
+ */
+  makeBoard() {
+    this.board=[];
+    for (let y = 0; y < this.height; y++) {
+      this.board.push(Array.from({ length: this.width }));
+    }
+  }
+
+/** makeHtmlBoard: make HTML table */
+
+  makeHtmlBoard() {
+  // get "htmlBoard" variable from the item in HTML w/ID of "board"
+    const htmlBoard = document.getElementById('board')
+
+  // create the whole board with HEIGHT X WIDTH
+    for (let y = 0; y < this.height; y++) {
+      const row = document.createElement("tr");
+      row.setAttribute('id','newTr');
+      for (let x = 0; x < this.width; x++) {
+        const cell = document.createElement("td");
+        cell.setAttribute("id", `${y}-${x}`);
+        cell.addEventListener("click", this.handleClick.bind(this));
+        row.append(cell);
+      }
+      htmlBoard.append(row);
+    }
+  }
+
+/** placeInTable: update DOM to place piece into HTML table of board */
+
+  placeInTable(y, x) {
+  // make a div and insert into correct table cell
+    const piece = document.createElement('div');
+    piece.classList.add('piece');
+    piece.classList.add(`p${this.currPlayer}`);
+    const pieceImg = document.createElement('img');
+    pieceImg.setAttribute('id','myImg');
+    if (this.currPlayer===1){
+      pieceImg.src="image/black.png";
+    }
+    else{
+      pieceImg.src="image/white.png";
+    }
+    piece.append(pieceImg);
+
+    const place = document.getElementById(`${y}-${x}`);
+    if (place!==null && piece!==null) place.append(piece);
+  }
+
+/** endGame: announce game end */
+  endGame(msg) {
+    alert(msg);
+  }
+
+/** handleClick: handle click of column top to play piece */
+  handleClick(evt) {
+  // get x from ID of clicked cell
+    let x=0;
+    let y=0;
+    let xy = evt.target.id.split('-');
+    x=parseInt(xy[1]);
+    y=parseInt(xy[0]);
+
+    if ((x>=0 && x<this.width) && (y>=0 && y<this.height) && !this.board[y][x]) {
+      if (!this.finish){
+        this.board[y][x] = this.currPlayer;
+        this.placeInTable(y, x);
+      }
+      else{
+        alert('Game FINISHED!!!');
+        return;
+      }
+    }
+    else {
+      if (!this.finish){
+        alert('Please choose another cell!!!');
+        return;
+      }
+      else{
+        alert('Game FINISHED!!!');
+        return;
+      }
+    }
+  
+  // check for win
+    if (this.checkForWin()) {
+      this.finish=true;
+      return this.endGame(`Player ${this.currPlayer} won!`);
+    }
+  
+  // check for tie
+    if (this.board.every(row => row.every(cell => cell))) {
+      this.finish=true;
+      return this.endGame('Tie!');
+    }
+    
+  // switch players
+    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+
+    if (this.numP===1){
+      setTimeout(() => {
+        this.computerP();
+      }, 500);
+    }
+  }
+
+  computerP() {
+  // get x from ID of clicked cell
+    let x = Math.floor(Math.random() * this.width);
+    let y = Math.floor(Math.random() * this.height);
+
+    while (this.board[y][x]){
+      x = Math.floor(Math.random() * this.width);
+      y = Math.floor(Math.random() * this.height);
+    }
+  // console.log(x,y, board[y][x]);
+
+    if ((x>=0 && x<this.width) && (y>=0 && y<this.height) && !this.board[y][x]) {
+      if (!this.finish){
+        this.board[y][x] = this.currPlayer;
+        this.placeInTable(y, x);
+      }
+      else{
+        alert('Game FINISHED!!!');
+        return;
+      }
+    }
+    else {
+      if (!this.finish){
+        alert('Please choose another cell!!!');
+        return;
+      }
+      else{
+        alert('Game FINISHED!!!');
+        return;
+      }
+    }
+  
+  // check for win
+    if (this.checkForWin()) {
+      this.finish=true;
+      return this.endGame(`Player ${this.currPlayer} won!`);
+    }
+  
+  // check for tie
+    if (this.board.every(row => row.every(cell => cell))) {
+      this.finish=true;
+      return this.endGame('Tie!');
+    }
+    
+  // switch players
+    this.currPlayer = this.currPlayer === 1 ? 2 : 1;
+  }
+
+/** checkForWin: check board cell-by-cell for "does a win start here?" */
+
+  checkForWin() {
+    
+    // Check four cells to see if they're all color of current player
+    //  - cells: list of four (y, x) cells
+    //  - returns true if all are legal coordinates & all match currPlayer
+    const _win = cells => 
+      cells.every(
+        ([y, x]) =>
+          y >= 0 &&
+          y < this.height &&
+          x >= 0 &&
+          x < this.width &&
+          this.board[y][x] === this.currPlayer
+      );
+
+  // check all directions to find winner
+
+    for (let y = 0; y < this.height; y++) {
+      for (let x = 0; x < this.width; x++) {
+        let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3], [y, x + 4]];
+        let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x], [y + 4, x]];
+        let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3], [y + 4, x + 4]];
+        let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3], [y + 4, x - 4]];
+
+        if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
+          return true;
+        }
+      }
+    }
+  }
+}
+
+let width=6;
+let numP=1;
+new Gomoku(width,numP);
+
 
 // change the board size
 const event = document.querySelector("#inputSize");
@@ -13,13 +210,12 @@ const size = document.querySelector('#boardSize');
 event.addEventListener('submit', function(e){
   e.preventDefault();
   if (size.value>5){
-    WIDTH=size.value;
+    width=size.value;
   }
   else{
-    WIDTH=6;
+    // width=6;
     alert('Please input Number > 5 !!!');
   }
-  HEIGHT=WIDTH;
   size.value='';
 
   const trList = document.querySelectorAll('#newTr');
@@ -28,11 +224,7 @@ event.addEventListener('submit', function(e){
   }
 
   // rebuild board and reset the game
-  FINISH=false;
-  currPlayer = 1;
-  board = [];
-  makeBoard();
-  makeHtmlBoard();
+  new Gomoku(width,numP);
 });
 
 // choose number of players
@@ -61,11 +253,7 @@ eventPlayer.addEventListener('click', function(e){
     }
 
     // rebuild board and reset the game
-    FINISH=false;
-    currPlayer = 1;
-    board = [];
-    makeBoard();
-    makeHtmlBoard();
+    new Gomoku(width,numP);
   }
   else{
     numP=2;
@@ -77,202 +265,6 @@ eventPlayer.addEventListener('click', function(e){
     }
 
     // rebuild board and reset the game
-    FINISH=false;
-    currPlayer = 1;
-    board = [];
-    makeBoard();
-    makeHtmlBoard();
+    new Gomoku(width,numP);
   }
 });
-
-/** makeBoard: create in-JS board structure:
- *    board = array of rows, each row is array of cells  (board[y][x])
- */
-function makeBoard() {
-  for (let y = 0; y < HEIGHT; y++) {
-    board.push(Array.from({ length: WIDTH }));
-  }
-}
-
-/** makeHtmlBoard: make HTML table */
-
-function makeHtmlBoard() {
-  // get "htmlBoard" variable from the item in HTML w/ID of "board"
-  const htmlBoard = document.getElementById('board')
-
-  // create the whole board with HEIGHT X WIDTH
-  for (let y = 0; y < HEIGHT; y++) {
-    const row = document.createElement("tr");
-    row.setAttribute('id','newTr');
-    for (let x = 0; x < WIDTH; x++) {
-      const cell = document.createElement("td");
-      cell.setAttribute("id", `${y}-${x}`);
-      cell.addEventListener("click", handleClick);
-      row.append(cell);
-    }
-    htmlBoard.append(row);
-  }
-}
-
-/** placeInTable: update DOM to place piece into HTML table of board */
-
-function placeInTable(y, x) {
-  // make a div and insert into correct table cell
-  const piece = document.createElement('div');
-  piece.classList.add('piece');
-  piece.classList.add(`p${currPlayer}`);
-  const pieceImg = document.createElement('img');
-  pieceImg.setAttribute('id','myImg');
-  if (currPlayer===1){
-    pieceImg.src="image/black.png";
-  }
-  else{
-    pieceImg.src="image/white.png";
-  }
-  piece.append(pieceImg);
-
-  const place = document.getElementById(`${y}-${x}`);
-  if (place!==null && piece!==null) place.append(piece);
-}
-
-/** endGame: announce game end */
-function endGame(msg) {
-  alert(msg);
-}
-
-/** handleClick: handle click of column top to play piece */
-function handleClick(evt) {
-  // get x from ID of clicked cell
-  let x=0;
-  let y=0;
-  let xy = evt.target.id.split('-');
-  x=parseInt(xy[1]);
-  y=parseInt(xy[0]);
-
-  if ((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT) && !board[y][x]) {
-    if (!FINISH){
-      board[y][x] = currPlayer;
-      placeInTable(y, x);
-    }
-    else{
-      alert('Game FINISHED!!!');
-      return;
-    }
-  }
-  else {
-    if (!FINISH){
-      alert('Please choose another cell!!!');
-      return;
-    }
-    else{
-      alert('Game FINISHED!!!');
-      return;
-    }
-  }
-  
-  // check for win
-  if (checkForWin()) {
-    FINISH=true;
-    return endGame(`Player ${currPlayer} won!`);
-  }
-  
-  // check for tie
-  if (board.every(row => row.every(cell => cell))) {
-    FINISH=true;
-    return endGame('Tie!');
-  }
-    
-  // switch players
-  currPlayer = currPlayer === 1 ? 2 : 1;
-
-  if (numP===1){
-    setTimeout(() => {
-      computerP();
-    }, 500);
-  }
-}
-
-function computerP() {
-  // get x from ID of clicked cell
-  x = Math.floor(Math.random() * WIDTH);
-  y = Math.floor(Math.random() * HEIGHT);
-
-  while (board[y][x]){
-    x = Math.floor(Math.random() * WIDTH);
-    y = Math.floor(Math.random() * HEIGHT);
-  }
-  // console.log(x,y, board[y][x]);
-
-  if ((x>=0 && x<WIDTH) && (y>=0 && y<HEIGHT) && !board[y][x]) {
-    if (!FINISH){
-      board[y][x] = currPlayer;
-      placeInTable(y, x);
-    }
-    else{
-      alert('Game FINISHED!!!');
-      return;
-    }
-  }
-  else {
-    if (!FINISH){
-      alert('Please choose another cell!!!');
-      return;
-    }
-    else{
-      alert('Game FINISHED!!!');
-      return;
-    }
-  }
-  
-  // check for win
-  if (checkForWin()) {
-    FINISH=true;
-    return endGame(`Player ${currPlayer} won!`);
-  }
-  
-  // check for tie
-  if (board.every(row => row.every(cell => cell))) {
-    FINISH=true;
-    return endGame('Tie!');
-  }
-    
-  // switch players
-  currPlayer = currPlayer === 1 ? 2 : 1;
-}
-
-/** checkForWin: check board cell-by-cell for "does a win start here?" */
-
-function checkForWin() {
-  function _win(cells) {
-    // Check four cells to see if they're all color of current player
-    //  - cells: list of four (y, x) cells
-    //  - returns true if all are legal coordinates & all match currPlayer
-
-    return cells.every(
-      ([y, x]) =>
-        y >= 0 &&
-        y < HEIGHT &&
-        x >= 0 &&
-        x < WIDTH &&
-        board[y][x] === currPlayer
-    );
-  }
-
-  // check all directions to find winner
-
-  for (let y = 0; y < HEIGHT; y++) {
-    for (let x = 0; x < WIDTH; x++) {
-      let horiz = [[y, x], [y, x + 1], [y, x + 2], [y, x + 3], [y, x + 4]];
-      let vert = [[y, x], [y + 1, x], [y + 2, x], [y + 3, x], [y + 4, x]];
-      let diagDR = [[y, x], [y + 1, x + 1], [y + 2, x + 2], [y + 3, x + 3], [y + 4, x + 4]];
-      let diagDL = [[y, x], [y + 1, x - 1], [y + 2, x - 2], [y + 3, x - 3], [y + 4, x - 4]];
-
-      if (_win(horiz) || _win(vert) || _win(diagDR) || _win(diagDL)) {
-        return true;
-      }
-    }
-  }
-}
-
-makeBoard();
-makeHtmlBoard();
